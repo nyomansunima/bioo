@@ -1,6 +1,6 @@
 <!-- README -->
 
-![Github Banner](https://github.com/nyomansunima/bioo/assets/54091887/4ba2440c-9f52-446b-acaf-24f82212fa1b)
+![Github Banner](https://github.com/nyomansunima/bioo/assets/54091887/9849a4c7-fda0-43ea-a192-3d4f337fb666)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/nyomansunima/bioo)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/nyomansunima)
@@ -11,7 +11,7 @@
 
 [🐛 Issues](https://github.com/nyomansunima/bioo/issues) . [📝 Explore docs](https://github.com/nyomansunima/bioo)
 
-# Oobi - All in one software for freelancer
+# Bioo - Link yourself with the new world
 
 Bioo is a URL shortening and link-in-bio web application that simplifies the sharing of multiple links with a single, customizable link-in-bio page. Whether you're a content creator, influencer, business, or just someone who wants to streamline their online presence, Bioo is here to help you share your content more effectively.
 
