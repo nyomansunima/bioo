@@ -1,0 +1,2 @@
+const settingConfig = {}
+export { settingConfig }
