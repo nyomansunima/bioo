@@ -1,16 +1,13 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import * as z from 'zod'
 
-export class GoogleAuthInput {
-  @IsString()
-  @IsNotEmpty()
-  accessToken: string
+export const googleAuthInputSchema = z.object({
+  accessToken: z.string().min(1, 'Please add the access token'),
+  idToken: z.string().min(1, 'Please add the Id Token'),
+})
 
-  @IsString()
-  idToken: string
-}
+export const githubAuthInputSchema = z.object({
+  accessToken: z.string().min(1, 'Please add the access token'),
+})
 
-export class GithubAuthInput {
-  @IsString()
-  @IsNotEmpty()
-  accessToken: string
-}
+export type GoogleAuthInput = z.infer<typeof googleAuthInputSchema>
+export type GithubAuthInput = z.infer<typeof githubAuthInputSchema>

@@ -1,15 +1,15 @@
-export interface AuthPayload {
+export type AuthPayload = {
   accessToken: string
   refreshToken: string
 }
 
-export interface AuthJwtUser {
+export type AuthJwtUser = {
   id: string
   email: string
   role: string
 }
 
-export interface GoogleOAuthData {
+export type GoogleOAuthData = {
   id: string
   email: string
   verified_email: boolean
@@ -20,14 +20,14 @@ export interface GoogleOAuthData {
   locale: string
 }
 
-export interface GithubOAuthEmailData {
+export type GithubOAuthEmailData = {
   email: string
   verified: boolean
   primary: boolean
   visibility: string
 }
 
-export interface GithubOAuthData {
+export type GithubOAuthData = {
   login: string
   id: number
   node_id: string

@@ -4,9 +4,10 @@ import { AuthPayload } from './model/auth.payload'
 import { oauthService } from './oauth.service'
 import * as jwt from 'jsonwebtoken'
 import { settingConfig } from '~/config/setting.config'
+import { User } from '~/user/model/user.payload'
 
 class AuthService {
-  async generateToken(user: Users): Promise<AuthPayload> {
+  async generateToken(user: User): Promise<AuthPayload> {
     const payload = {
       'urn:cooble:claim': true,
       email: user.email,

@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import { validateBody } from '~/utils/validation'
-import { GithubAuthInput, GoogleAuthInput } from './model/auth.input'
+import {
+  githubAuthInputSchema,
+  googleAuthInputSchema,
+} from './model/auth.input'
 import { getBody } from '~/utils/helpers'
 import { authService } from './auth.service'
 import { routeHandler } from '~/utils/handler'
@@ -9,7 +12,7 @@ const authController = Router()
 
 authController.post(
   '/auth/google',
-  validateBody(GoogleAuthInput),
+  validateBody(googleAuthInputSchema),
   routeHandler(async (req) => {
     const body = await getBody(req)
     return await authService.googleAuth(body)
@@ -18,7 +21,7 @@ authController.post(
 
 authController.post(
   '/auth/github',
-  validateBody(GithubAuthInput),
+  validateBody(githubAuthInputSchema),
   routeHandler(async (req) => {
     const body = await getBody(req)
     return await authService.githubAuth(body)

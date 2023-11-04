@@ -3,8 +3,6 @@ import {
   GithubOAuthData,
   GoogleOAuthData,
 } from '~/auth/model/auth.payload'
-import { UserPayload } from './model/user.payload'
-import { getXataClient, Users } from '~/config/xata'
 import {
   CreateUserInput,
   VerifyActivationAccountInput,
@@ -17,13 +15,20 @@ import {
   UnprocessableEntityException,
 } from '~/utils/http-exception'
 import { generateRandomCharsAndNumbers } from '~/utils/helpers'
-import { upstashRedis } from '~/config/upstash'
 import { emailService } from '~/email/email.service'
+import { User, UserPayload } from './model/user.payload'
+import { dbConnection } from '@db/client'
+import { eq } from 'drizzle-orm'
+import { users } from '@db/schema'
+import { upstashRedisClient } from '~/config/upstash.config'
 
 class UserService {
-  async getUserByEmail(email: string): Promise<Users | null> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
     try {
-      const user = await getXataClient().db.users.filter({ email }).getFirst()
+      const user = await dbConnection.query.users.findFirst({
+        where: eq(users.email, email),
+      })
+
       return user
     } catch (error) {
       throw new BadRequestException()
@@ -34,17 +39,22 @@ class UserService {
     return email.split('@')[0]
   }
 
-  async createNewUser(input: CreateUserInput): Promise<Users> {
-    const newUser = await getXataClient().db.users.create(input)
+  async createNewUser(input: CreateUserInput): Promise<User> {
+    const newUser = (
+      await dbConnection.insert(users).values(input).returning()
+    )[0]
     return newUser
   }
 
-  async assignProvider(user: Users, provider: string): Promise<void> {
+  async assignProvider(user: User, provider: string): Promise<void> {
     if (!user.providers!.includes(provider)) {
       try {
-        await getXataClient().db.users.update(user.id, {
-          providers: [...user.providers!, provider],
-        })
+        const newProviders = [...user.providers!.split(','), provider]
+        const stringProviders = newProviders.join(',')
+        await dbConnection
+          .update(users)
+          .set({ providers: stringProviders })
+          .where(eq(users.id, user.id))
       } catch {
         throw new UnprocessableEntityException('auth/failed-update-provider')
       }
@@ -59,10 +69,10 @@ class UserService {
       const newUser: CreateUserInput = {
         avatar: input.picture,
         email: input.email,
-        verified: false,
+        active: false,
         fullName: input.name,
         role: 'user',
-        providers: [GOOGLE_PROVIDER],
+        providers: GOOGLE_PROVIDER,
         username: this.generateUsernameFromEmail(input.email),
       }
 
@@ -81,11 +91,10 @@ class UserService {
       const newUser: CreateUserInput = {
         avatar: input.avatar_url,
         email: input.email,
-        verified: false,
+        active: false,
         fullName: input.name,
         role: 'user',
-        providers: [GITHUB_PROVIDER],
-        location: input.location,
+        providers: GITHUB_PROVIDER,
         username: this.generateUsernameFromEmail(input.email),
       }
 
@@ -100,7 +109,7 @@ class UserService {
     const user = await this.getUserByEmail(input.email)
     if (user) {
       const verificationCode = generateRandomCharsAndNumbers(6)
-      await upstashRedis.set(`${user.id}-token`, verificationCode)
+      await upstashRedisClient.set(`${user.id}-token`, verificationCode)
       await emailService.sendVerificationEmail(user, verificationCode)
       return
     } else {
@@ -114,7 +123,10 @@ class UserService {
 
   async activateAccount(userId: string): Promise<void> {
     try {
-      await getXataClient().db.users.update(userId, { verified: true })
+      await dbConnection
+        .update(users)
+        .set({ active: true })
+        .where(eq(users.id, userId))
       return
     } catch (error) {
       throw new UnprocessableEntityException('user/activation-failed')
@@ -130,7 +142,7 @@ class UserService {
       throw new NotFoundException('user/not-found')
     }
 
-    const token = await upstashRedis.get<string>(`${user.id}-token`)
+    const token = await upstashRedisClient.get<string>(`${user.id}-token`)
     if (!token) {
       throw new ForbiddenException('token-expired')
     }
@@ -140,15 +152,15 @@ class UserService {
     }
 
     await this.activateAccount(user.id)
-    await upstashRedis.del(`${user.id}-token`)
+    await upstashRedisClient.del(`${user.id}-token`)
     return emailService.sendOnboardingEmail(user)
   }
 
   async getUserFromCredential(userId: string): Promise<UserPayload> {
     try {
-      const user = await getXataClient()
-        .db.users.filter({ id: userId })
-        .getFirstOrThrow()
+      const user = (
+        await dbConnection.select().from(users).where(eq(users.id, userId))
+      )[0]
       return user
     } catch (error) {
       throw new NotFoundException('user/not-found')

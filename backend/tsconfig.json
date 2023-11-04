@@ -5,6 +5,7 @@
     "allowJs": true,
     "baseUrl": "./",
     "paths": {
+      "@templates/*": ["./templates/*"],
       "@db/*": ["./db/*"],
       "~/*": ["./src/*"]
     },

@@ -11,7 +11,7 @@ import {
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin'])
 
 export const users = pgTable('users', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').primaryKey().defaultRandom(),
   username: varchar('username'),
   fullName: char('full_name'),
   avatar: text('avatar'),
@@ -19,5 +19,5 @@ export const users = pgTable('users', {
   bio: text('bio'),
   role: userRoleEnum('role'),
   providers: varchar('providers'),
-  active: boolean('active'),
+  active: boolean('active').default(false),
 })

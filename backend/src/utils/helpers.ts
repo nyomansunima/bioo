@@ -1,6 +1,5 @@
 import { Request } from 'express'
 import { AuthJwtUser } from '~/auth/model/auth.payload'
-import * as uuid from 'uuid'
 
 /**
  * Get the query params from context
@@ -61,8 +60,4 @@ export function generateRandomCharsAndNumbers(length: number) {
     result += charset[randomIndex]
   }
   return result
-}
-
-export function generateRandomUUID() {
-  return uuid.v4()
 }

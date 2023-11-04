@@ -1,6 +1,6 @@
-import { validate } from 'class-validator'
 import { getBody, getParams, getQuery } from '~/utils/helpers'
 import { NextFunction, Request, RequestHandler, Response } from 'express'
+import { AnyZodObject } from 'zod'
 
 /**
  * ## validationMiddleware
@@ -11,45 +11,36 @@ import { NextFunction, Request, RequestHandler, Response } from 'express'
  *
  * This working on the middleware layer
  *
- * @param dtoClass the class that include validation that contain `class-validator` validation
+ * @param dtoSchema the schema that include validation that contain `zod object` validation
  * @param body request data that need to validate as object. eg `params`, `body`, `paths`
  *
  * @returns {Context | Next}
  */
-export function validationMiddleware<T extends object>(
-  dtoClass: new () => T,
+export function validationMiddleware(
+  dtoSchema: AnyZodObject,
   inputType: 'body' | 'params' | 'query',
 ): RequestHandler {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const dtoInstance = new dtoClass()
     const requestInput = {
       body: getBody(req),
       query: getQuery(req),
       params: getParams(req),
     }
 
-    Object.assign(dtoInstance, requestInput[inputType])
-    requestInput[inputType] = dtoInstance
+    const validationData = requestInput[inputType]
+    const validationRes = dtoSchema.safeParse(validationData)
 
-    const errors = await validate(dtoInstance, {
-      forbidUnknownValues: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    })
-
-    if (errors && errors.length > 0) {
-      const validationErrors = {}
-
-      errors.forEach((error) => {
-        validationErrors[error.property] = Object.values(
-          error.constraints || {},
-        )
-      })
-
+    if (!validationRes.success) {
       const errorResponse = {
         statusCode: '402',
         message: 'validation/invalid-input',
-        errors: validationErrors,
+        errors: validationRes.error.errors.map((err) => {
+          if (err.code == 'invalid_type') {
+            return `${err.path[0]} is ${err.message}`
+          } else {
+            return `${err.message}`
+          }
+        }),
       }
 
       return res.status(402).json(errorResponse)
@@ -64,11 +55,11 @@ export function validationMiddleware<T extends object>(
  *
  * validate the body request
  *
- * @param dtoClass class passed as validation
+ * @param dtoSchema class passed as validation
  * @returns {ctx}
  */
-export function validateBody<T extends object>(dtoClass: new () => T) {
-  return validationMiddleware(dtoClass, 'body')
+export function validateBody(dtoSchema: AnyZodObject) {
+  return validationMiddleware(dtoSchema, 'body')
 }
 
 /**
@@ -76,11 +67,11 @@ export function validateBody<T extends object>(dtoClass: new () => T) {
  *
  * validate the params that send from incoming request
  *
- * @param dtoClass class passed as validation
+ * @param dtoSchema class passed as validation
  * @returns {ctx}
  */
-export function validateParams<T extends object>(dtoClass: new () => T) {
-  return validationMiddleware(dtoClass, 'params')
+export function validateParams(dtoSchema: AnyZodObject) {
+  return validationMiddleware(dtoSchema, 'params')
 }
 
 /**
@@ -88,9 +79,9 @@ export function validateParams<T extends object>(dtoClass: new () => T) {
  *
  * validate the query from the income request
  *
- * @param dtoClass class passed as validation
+ * @param dtoSchema class passed as validation
  * @returns {ctx}
  */
-export function validateQuery<T extends object>(dtoClass: new () => T) {
-  return validationMiddleware(dtoClass, 'query')
+export function validateQuery(dtoSchema: AnyZodObject) {
+  return validationMiddleware(dtoSchema, 'query')
 }

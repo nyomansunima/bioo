@@ -12,6 +12,7 @@ app.use(morgan('combined'))
 app.use(helmet())
 app.use(cors({ origin: '*' }))
 app.use(rateLimit({ limit: 60, windowMs: 1000 * 60 }))
+app.use(App.json())
 
 /** Register all of the router */
 app.use([authController])
