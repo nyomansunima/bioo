@@ -6,5 +6,6 @@ module.exports = {
   ],
   rules: {
     'consistent-return': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 }

@@ -15,9 +15,6 @@ const config: Config = {
         '2xl': '1400px',
       },
     },
-    fontFamily: {
-      sans: ['DM Sans', 'sans-serif'],
-    },
     screens: {
       tablet: '640px',
       laptop: '1024px',
@@ -69,6 +66,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
 }
 export default config

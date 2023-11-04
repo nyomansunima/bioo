@@ -5,10 +5,10 @@
     "allowJs": true,
     "baseUrl": "./",
     "paths": {
+      "@db/*": ["./db/*"],
       "~/*": ["./src/*"]
     },
     "outDir": "./dist",
-    "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,

@@ -20,11 +20,6 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@store/*": ["./src/store/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@services/*": ["./src/services/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@components/*": ["./src/components/*"],
       "~/*": ["./src/*"]
     }
   },

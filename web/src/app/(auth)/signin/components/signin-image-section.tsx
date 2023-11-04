@@ -1,8 +1,8 @@
 import Image from 'next/image'
 
-export function SigninImage() {
+export default function SigninImageSection() {
   return (
-    <section className="flex w-1/2 h-full bg-[#E8E8FF] items-end ">
+    <section className="hidden laptop:flex w-1/2 h-full bg-[#E8E8FF] items-end animate-in duration-700 fade-in-10">
       <Image
         src={'/images/open-doodle-swinging.svg'}
         height={521}

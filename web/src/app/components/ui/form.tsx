@@ -10,8 +10,8 @@ import {
   useFormContext,
 } from 'react-hook-form'
 
-import { mergeClass } from '@utils/helpers'
-import { Label } from '@components/ui/label'
+import { mergeClass } from '~/utils/helpers'
+import { Label } from './label'
 
 const Form = FormProvider
 

@@ -1,9 +1,28 @@
 import { Router } from 'express'
+import { validateBody } from '~/utils/validation'
+import { GithubAuthInput, GoogleAuthInput } from './model/auth.input'
+import { getBody } from '~/utils/helpers'
+import { authService } from './auth.service'
+import { routeHandler } from '~/utils/handler'
 
 const authController = Router()
 
-authController.get('/auth', (req, res) => {
-  return res.send('Hello fuck')
-})
+authController.post(
+  '/auth/google',
+  validateBody(GoogleAuthInput),
+  routeHandler(async (req) => {
+    const body = await getBody(req)
+    return await authService.googleAuth(body)
+  }),
+)
+
+authController.post(
+  '/auth/github',
+  validateBody(GithubAuthInput),
+  routeHandler(async (req) => {
+    const body = await getBody(req)
+    return await authService.githubAuth(body)
+  }),
+)
 
 export default authController
