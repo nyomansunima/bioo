@@ -1,3 +1,4 @@
+import { getServerSession } from 'next-auth'
 import { configuration } from './setting-config'
 
 interface APIConenctionOption extends RequestInit {
@@ -8,16 +9,20 @@ interface APIConenctionOption extends RequestInit {
 // retrive the token in every single request needed
 // this will useful when the resource need the
 // credential to access resources
-const getSession = async (): Promise<string> => {
+const getSession = async (): Promise<string | undefined> => {
   try {
-    const res = await fetch('/api/auth/session')
+    const res = await fetch('http://localhost:3000/api/auth/session')
+    console.log('res is here', await res.json())
 
-    if (res.ok) {
-      const data = await res.json()
-      return data.token
-    } else {
-      throw await res.json()
-    }
+    return undefined
+
+    // if (res.ok) {
+    //   const data = await res.json()
+    //   console.log('Data is', data)
+    //   return data
+    // } else {
+    //   throw await res.json()
+    // }
   } catch (error) {
     throw error
   }
@@ -41,8 +46,10 @@ export async function apiConnection<T extends any>(
       accept: 'application/json, text/plain, */*,image/webp',
     },
   }
+
   if (options?.auth) {
-    const accessToken = getSession()
+    const accessToken = await getSession()
+
     defaultOption = {
       ...defaultOption,
       headers: {

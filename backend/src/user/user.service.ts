@@ -8,7 +8,6 @@ import {
   VerifyActivationAccountInput,
 } from './model/user.input'
 import {
-  BadRequestException,
   ConflictException,
   ForbiddenException,
   NotFoundException,
@@ -24,15 +23,11 @@ import { upstashRedisClient } from '~/config/upstash.config'
 
 class UserService {
   async getUserByEmail(email: string): Promise<User | undefined> {
-    try {
-      const user = await dbConnection.query.users.findFirst({
-        where: eq(users.email, email),
-      })
+    const user = (
+      await dbConnection.select().from(users).where(eq(users.email, email))
+    )[0]
 
-      return user
-    } catch (error) {
-      throw new BadRequestException()
-    }
+    return user || undefined
   }
 
   generateUsernameFromEmail(email: string): string {

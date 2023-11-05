@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import cors from 'cors'
 import rateLimit from 'express-rate-limit'
 import authController from './auth/auth.controller'
+import userController from './user/user.controller'
 
 const app = App()
 
@@ -15,7 +16,7 @@ app.use(rateLimit({ limit: 60, windowMs: 1000 * 60 }))
 app.use(App.json())
 
 /** Register all of the router */
-app.use([authController])
+app.use([authController, userController])
 
 app.listen(4000, () => {
   console.log(`Backend Running on port 4000`)

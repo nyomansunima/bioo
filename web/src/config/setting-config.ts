@@ -3,6 +3,9 @@
  * inclduing the vars, config and all settings
  */
 export const configuration = {
+  app: {
+    host: process.env.NEXT_PUBLIC_APP_HOST!,
+  },
   api: {
     url: process.env.NEXT_PUBLIC_BACKEND_API_URL!,
   },
