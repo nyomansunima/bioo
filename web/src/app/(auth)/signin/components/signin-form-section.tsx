@@ -14,7 +14,6 @@ import {
 import { Input } from '~/app/components/ui/input'
 import { Button } from '~/app/components/ui/button'
 import { useMutation } from '@tanstack/react-query'
-import { signIn } from 'next-auth/react'
 
 const formSchema = z.object({
   email: z
@@ -91,13 +90,9 @@ function EmailPasswordForm() {
 }
 
 export default function SigninFormSection() {
-  function signUsingGoogle() {
-    signIn('google', { redirect: false })
-  }
+  function signUsingGoogle() {}
 
-  function signUsingGithub() {
-    signIn('github', { redirect: false })
-  }
+  function signUsingGithub() {}
 
   return (
     <section className="flex h-full laptop:w-1/2 items-center animate-in slide-in-from-bottom-24 duration-1000">

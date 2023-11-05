@@ -1,4 +1,3 @@
-import { getServerSession } from 'next-auth'
 import { configuration } from './setting-config'
 
 interface APIConenctionOption extends RequestInit {
