@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function LandingPage() {
-  return <>Hello frm landing</>
+  return <main className="min-h-screen">Hello frm landing</main>
 }
